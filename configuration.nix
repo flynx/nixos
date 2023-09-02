@@ -5,7 +5,7 @@
 #   - hibernation
 #     - down works
 #     - up broken
-#   - suspend
+#   - suspend (broken)
 #   - split into logical components (OS, hardware, ...)
 #
 #
@@ -24,12 +24,6 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  # XXX move to hardware-specific-file...
-  powerManagement.resumeCommands = ''
-    ${pkgs.kmod}/bin/modprobe -r i2c_i801
-    ${pkgs.kmod}/bin/modprobe i2c_i801
-  '';
 
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
