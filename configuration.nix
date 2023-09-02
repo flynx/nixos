@@ -25,6 +25,13 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # fix touchpad not working after resume on ThinkPad Yoga S1...
+  # XXX move to device-specific config file...
+  powerManagement.resumeCommands = ''
+    ${pkgs.kmod}/bin/modprobe -r i2c_i801
+    ${pkgs.kmod}/bin/modprobe i2c_i801
+  '';
+
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 

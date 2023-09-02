@@ -36,10 +36,4 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  # fix touchpad not working after resume on ThinkPad Yoga S1...
-  powerManagement.resumeCommands = ''
-    ${pkgs.kmod}/bin/modprobe -r i2c_i801
-    ${pkgs.kmod}/bin/modprobe i2c_i801
-  '';
-
 }
