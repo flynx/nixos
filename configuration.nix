@@ -203,6 +203,7 @@
     # XXX this does not work on default gnome...
     #wl-gammactl
     nerdfonts
+    nextcloud-client
 
     # dev
     gnumake
