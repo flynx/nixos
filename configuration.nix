@@ -1,14 +1,13 @@
 #
 # TODO:
-#   - second language layout
+#   - second language keyboard layout
 #   - language switching in Gnome (keyboard)
-#   - hibernation
-#     - down works
-#     - up broken
-#   - suspend -- works
+#   - hibernation -- DONE
+#   - suspend -- DONE
 #   - split into logical components (OS, hardware, ...)
 #   - tablet-mode
 #     - sensors
+#   - latex -- DONE
 #
 #
 # Edit this configuration file to define what should be installed on
@@ -43,6 +42,17 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # XXX this is the same swap partition as fedora...
+  boot.resumeDevice = "/dev/disk/by-uuid/6ac0c126-f701-43a5-8576-09cc76be1409";
+  #boot.kernelParams = [ "systemd.unified_cgroup_hierarchy=0" "resume_offset=13465600" ];
+  swapDevices = [ 
+  #  { 
+  #    device = "/var/lib/swapfile"; 
+  #    size = 8*1024; 
+  #  } 
+    { device = "/dev/disk/by-uuid/6ac0c126-f701-43a5-8576-09cc76be1409"; } 
+  ];
 
   # XXX move to hardware-specific-file...
   powerManagement.resumeCommands = ''
@@ -151,7 +161,7 @@
     #tdrop
     tmux
     tree
-    htop
+    htop gtop
     iotop
     iftop
 
@@ -197,9 +207,9 @@
     # dev
     gnumake
 
-    #gnomeExtensions.ddterm
     gnome.gnome-tweaks
     gnome.dconf-editor
+    gnomeExtensions.quick-settings-tweaker
     gnomeExtensions.quake-mode
     gnomeExtensions.gsconnect
     gnomeExtensions.dash-to-panel
@@ -213,7 +223,8 @@
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.caffeine
     gnomeExtensions.grand-theft-focus
-    gnomeExtensions.syncthing-indicator
+    # does not seem to work...
+    #gnomeExtensions.syncthing-indicator
     gnome.gedit
 
     vlc
