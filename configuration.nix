@@ -5,8 +5,10 @@
 #   - hibernation
 #     - down works
 #     - up broken
-#   - suspend (broken)
+#   - suspend -- works
 #   - split into logical components (OS, hardware, ...)
+#   - tablet-mode
+#     - sensors
 #
 #
 # Edit this configuration file to define what should be installed on
@@ -15,7 +17,24 @@
 
 { config, pkgs, ... }:
 
+## LaTeX...
+#let tex = pkg.texlive.combine {
+#  inherit (pkgs.texlive) scheme-basic
+#  kvoptions calc xargs ifthen iftex pgffor xint xinttools listofitems xkeyval
+#  etoolbox changepage pdfcomment eso-pic environ numprint trimclip xcolor
+#  pagecolor colorspace graphicx adjustbox textpos fancyvrb flowfram rotating
+#  fancyhdr pdfpages geometry;
+#  #(setq org-latex-compiler "lualatex")
+#  #(setq org-preview-latex-default-process 'dvisvgm)
+#};
+#in
+
 {
+  nix.settings.experimental-features = [ 
+    "nix-command" 
+    "flakes"
+  ];
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -25,8 +44,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # fix touchpad not working after resume on ThinkPad Yoga S1...
-  # XXX move to device-specific config file...
+  # XXX move to hardware-specific-file...
   powerManagement.resumeCommands = ''
     ${pkgs.kmod}/bin/modprobe -r i2c_i801
     ${pkgs.kmod}/bin/modprobe i2c_i801
@@ -115,9 +133,11 @@
     packages = with pkgs; [
     ];
   };
+  environment.localBinInPath = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -145,20 +165,48 @@
     #syncthing
 
     tldr
+    bat
+
+    # LaTeX
+    (texlive.combine {
+      inherit (texlive) scheme-medium
+      # missing:
+      #   calc graphicx ifthen pgffor rotating trimclip xinttools 
+      kvoptions xargs ifthenx iftex xint listofitems xkeyval
+      etoolbox changepage pdfcomment eso-pic environ numprint xcolor
+      pagecolor colorspace graphics adjustbox textpos fancyvrb flowfram
+      fancyhdr pdfpages geometry 
+      hardwrap catchfile 
+      # doc...
+      titlesec hypdoc doctools needspace xstring listings imakeidx  
+      latexmk;
+      #(setq org-latex-compiler "lualatex")
+      #(setq org-preview-latex-default-process 'dvisvgm)
+    })
 
     # GUI
     keepassxc
     ulauncher
     kitty
     tilix
+    logseq
+    # XXX this does not work on default gnome...
+    #wl-gammactl
+    nerdfonts
+
+    # dev
+    gnumake
 
     #gnomeExtensions.ddterm
     gnome.gnome-tweaks
+    gnome.dconf-editor
     gnomeExtensions.quake-mode
     gnomeExtensions.gsconnect
     gnomeExtensions.dash-to-panel
     gnomeExtensions.blur-my-shell
-    gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.custom-accent-colors
+    #gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.appindicator
     gnomeExtensions.date-menu-formatter
     gnomeExtensions.lock-keys
     gnomeExtensions.clipboard-indicator
@@ -170,6 +218,8 @@
 
     vlc
     mpv
+
+    #texlive.combined.scheme-full 
   ];
 
   programs.geary.enable = false;
@@ -237,6 +287,22 @@
 
   # Laptop configuration...
   services.logind.lidSwitch = "lock";
+
+  # ulauncher... 
+  systemd.user.services.ulauncher = {
+    enable = true;
+    description = "Start Ulauncher";
+    script = ''
+      ${pkgs.coreutils-full}/bin/sleep 2
+      ${pkgs.ulauncher}/bin/ulauncher --hide-window
+    '';
+
+    documentation = [ "https://github.com/Ulauncher/Ulauncher/blob/f0905b9a9cabb342f9c29d0e9efd3ba4d0fa456e/contrib/systemd/ulauncher.service" ];
+    # XXX this does not work for some reason...
+    #wantedBy = [ "graphical.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "display-manager.service" ];
+  };
 
 
   # Open ports in the firewall.
