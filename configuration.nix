@@ -34,10 +34,10 @@
     "flakes"
   ];
 
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [ 
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -54,11 +54,15 @@
     { device = "/dev/disk/by-uuid/6ac0c126-f701-43a5-8576-09cc76be1409"; } 
   ];
 
+  # fix an issue with the touchpad/touchpoint not working after suspend...
   # XXX move to hardware-specific-file...
-  powerManagement.resumeCommands = ''
-    ${pkgs.kmod}/bin/modprobe -r i2c_i801
-    ${pkgs.kmod}/bin/modprobe i2c_i801
-  '';
+  boot.blacklistedKernelModules = [
+    "i2c_i801"
+  ];
+  #powerManagement.resumeCommands = ''
+  #  ${pkgs.kmod}/bin/modprobe -r i2c_i801
+  #  ${pkgs.kmod}/bin/modprobe i2c_i801
+  #'';
 
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -145,17 +149,25 @@
   };
   environment.localBinInPath = true;
 
+  environment.variables.EDITOR = "vim";
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  
+  # XXX not sure who wants electron...
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-25.9.0"
+  ];
 
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim-full
-    nodejs
-    go
+    micro
     vifm
+    ranger
 
     psmisc
     #tdrop
@@ -173,7 +185,9 @@
     wget
     tor
     #syncthing
+    syncthingtray
 
+    zip unzip
     tldr
     bat
 
@@ -201,23 +215,30 @@
     tilix
     logseq
     # XXX this does not work on default gnome...
-    #wl-gammactl
+    wl-gammactl
     nerdfonts
     nextcloud-client
 
     # dev
     gnumake
+    nodejs
+    electron
+    go
+    sbcl
 
+    # Gnome stuff...
     gnome.gnome-tweaks
     gnome.dconf-editor
     gnomeExtensions.quick-settings-tweaker
-    gnomeExtensions.quake-mode
+    #gnomeExtensions.quake-mode
+    gnomeExtensions.quake-terminal
     gnomeExtensions.gsconnect
     gnomeExtensions.dash-to-panel
     gnomeExtensions.blur-my-shell
     gnomeExtensions.custom-accent-colors
     #gnomeExtensions.tray-icons-reloaded
     gnomeExtensions.appindicator
+    gnomeExtensions.customize-ibus
     gnomeExtensions.date-menu-formatter
     gnomeExtensions.lock-keys
     gnomeExtensions.clipboard-indicator
@@ -226,10 +247,16 @@
     gnomeExtensions.grand-theft-focus
     # does not seem to work...
     #gnomeExtensions.syncthing-indicator
+
+    gnome-firmware-updater
     gnome.gedit
 
+    # media...
     vlc
     mpv
+
+    blender
+    krita
 
     #texlive.combined.scheme-full 
   ];
@@ -249,49 +276,55 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
+  services.fwupd.enable = true;
 
   services.openssh.enable = true;
 
-  services.syncthing.enable = true;
-  services.syncthing.user = "f_lynx";
-  services.syncthing.configDir = "/home/f_lynx/.config/syncthing/";
-  services.syncthing.dataDir = "/home/f_lynx/Sync/";
+  services.syncthing = {
+    enable = true;
+    user = "f_lynx";
+    configDir = "/home/f_lynx/.config/syncthing/";
+    dataDir = "/home/f_lynx/Sync/";
+  };
 
-  services.keyd.enable = true;
-  services.keyd.ids = [
-    "*"
-  ];
-  services.keyd.settings = {
-    main = {
-      # Modern ThinkPad's printscrn to menu key...
-      sysrq = "overload(prtsc, compose)";
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      default = {
+        ids = ["*"];
+        settings = {
+          main = {
+            # Modern ThinkPad's printscrn to menu key...
+            sysrq = "overload(prtsc, compose)";
 
-      rightshift = "overload(rightshift, rightshift)";
-      rightalt = "overload(rightalt, rightalt)";
-    };
-    prtsc = {
-      # Gnome: screenshot...
-      rightshift = "sysrq";
+            rightshift = "overload(rightshift, rightshift)";
+            rightalt = "overload(rightalt, rightalt)";
+          };
+          prtsc = {
+            # Gnome: screenshot...
+            rightshift = "sysrq";
 
-      # Gnome: minimize/maximize...
-      up = "M-up";
-      down = "M-down";
+            # Gnome: minimize/maximize...
+            up = "M-up";
+            down = "M-down";
 
-      # Gnome: next/prev workspace...
-      left = "M-A-left";
-      right = "M-A-right";
-    };
-    "rightshift:S" = {
-      # Gnome: screenshot...
-      sysrq = "sysrq";
-    };
-    "rightalt:A" = {
-      # Gnome: move window...
-      left = "macro(A-f7 20ms left left enter)";
-      right = "macro(A-f7 20ms right right enter)";
-      up = "macro(A-f7 20ms up up enter)";
-      down = "macro(A-f7 20ms down down enter)";
+            # Gnome: next/prev workspace...
+            left = "M-A-left";
+            right = "M-A-right";
+          };
+          "rightshift:S" = {
+            # Gnome: screenshot...
+            sysrq = "sysrq";
+          };
+          "rightalt:A" = {
+            # Gnome: move window...
+            left = "macro(A-f7 20ms left left enter)";
+            right = "macro(A-f7 20ms right right enter)";
+            up = "macro(A-f7 20ms up up enter)";
+            down = "macro(A-f7 20ms down down enter)";
+          };
+        };
+      };
     };
   };
 
