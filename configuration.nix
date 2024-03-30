@@ -1,5 +1,6 @@
 #
 # TODO:
+#   - setdisplay gamma (gnome-gamma-tool)
 #   - second language keyboard layout
 #   - language switching in Gnome (keyboard)
 #   - hibernation -- DONE
@@ -39,6 +40,10 @@
     ./hardware-configuration.nix
   ];
 
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+  
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -54,6 +59,8 @@
     { device = "/dev/disk/by-uuid/6ac0c126-f701-43a5-8576-09cc76be1409"; } 
   ];
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # fix an issue with the touchpad/touchpoint not working after suspend...
   # XXX move to hardware-specific-file...
   boot.blacklistedKernelModules = [
@@ -63,6 +70,9 @@
   #  ${pkgs.kmod}/bin/modprobe -r i2c_i801
   #  ${pkgs.kmod}/bin/modprobe i2c_i801
   #'';
+
+  # ThinkPad keyboard auto highlight...
+  #services.tp-auto-kbbl.enable = true;
 
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -79,7 +89,10 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
+  #i18n.supportedLocales = [
+  #  "en_US.UTF-8"
+  #  "ru_RU.UTF-8"
+  #];
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "ru_RU.UTF-8";
     LC_IDENTIFICATION = "ru_RU.UTF-8";
@@ -96,22 +109,26 @@
   services.xserver.enable = true;
   # Configure keymap in X11
   services.xserver = {
-    layout = "us, ru";
-    xkbVariant = "";
+    layout = "us,ru";
+    xkbOptions = "grp:alt_shift_toggle";
   };
   services.xserver.excludePackages = [ 
     pkgs.xterm 
   ];
 
-
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  #services.xserver.desktopManager.gnome = {
-  #  extraGSettingsOverrides = ''
-  #    sources=[('xkb', 'us, ru')]
-  #  '';
-  #};
+  # set keyboard layouts and switching...
+  services.xserver.desktopManager.gnome.extraGSettingsOverrides = ''
+    [org.gnome.desktop.input-sources]
+    sources=[('xkb', 'us'),('xkb', 'ru')]
+    per-window=true
+
+    [org.gnome.desktop.wm.keybindings]
+    switch-input-source=['<Alt>Shift_L']
+    switch-input-source-backward=['<Shift>Alt_L']
+  '';
   environment.gnome.excludePackages = [ 
     pkgs.gnome-tour 
   ];
@@ -136,156 +153,16 @@
     #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  services.colord.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.f_lynx = {
-    isNormalUser = true;
-    description = "Alex A. Naanou";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    ];
-  };
-  environment.localBinInPath = true;
+  services.flatpak.enable = true;
 
-  environment.variables.EDITOR = "vim";
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  
-  # XXX not sure who wants electron...
-  nixpkgs.config.permittedInsecurePackages = [
-    "electron-25.9.0"
-  ];
-
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    vim-full
-    micro
-    vifm
-    ranger
-
-    psmisc
-    #tdrop
-    tmux
-    tree
-    htop gtop
-    iotop
-    iftop
-
-    gparted
-    #gdisk
-    testdisk
-    jdupes
-
-    wget
-    tor
-    #syncthing
-    syncthingtray
-
-    zip unzip
-    tldr
-    bat
-
-    # LaTeX
-    (texlive.combine {
-      inherit (texlive) scheme-medium
-      # missing:
-      #   calc graphicx ifthen pgffor rotating trimclip xinttools 
-      kvoptions xargs ifthenx iftex xint listofitems xkeyval
-      etoolbox changepage pdfcomment eso-pic environ numprint xcolor
-      pagecolor colorspace graphics adjustbox textpos fancyvrb flowfram
-      fancyhdr pdfpages geometry 
-      hardwrap catchfile 
-      # doc...
-      titlesec hypdoc doctools needspace xstring listings imakeidx  
-      latexmk;
-      #(setq org-latex-compiler "lualatex")
-      #(setq org-preview-latex-default-process 'dvisvgm)
-    })
-
-    # GUI
-    keepassxc
-    ulauncher
-    kitty
-    tilix
-    logseq
-    # XXX this does not work on default gnome...
-    wl-gammactl
-    nerdfonts
-    nextcloud-client
-
-    # dev
-    gnumake
-    nodejs
-    electron
-    go
-    sbcl
-
-    # Gnome stuff...
-    gnome.gnome-tweaks
-    gnome.dconf-editor
-    gnomeExtensions.quick-settings-tweaker
-    #gnomeExtensions.quake-mode
-    gnomeExtensions.quake-terminal
-    gnomeExtensions.gsconnect
-    gnomeExtensions.dash-to-panel
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.custom-accent-colors
-    #gnomeExtensions.tray-icons-reloaded
-    gnomeExtensions.appindicator
-    gnomeExtensions.customize-ibus
-    gnomeExtensions.date-menu-formatter
-    gnomeExtensions.lock-keys
-    gnomeExtensions.clipboard-indicator
-    gnomeExtensions.hibernate-status-button
-    gnomeExtensions.caffeine
-    gnomeExtensions.grand-theft-focus
-    # does not seem to work...
-    #gnomeExtensions.syncthing-indicator
-
-    gnome-firmware-updater
-    gnome.gedit
-
-    # media...
-    vlc
-    mpv
-
-    blender
-    krita
-
-    #texlive.combined.scheme-full 
-  ];
-
-  programs.geary.enable = false;
-
-  programs.git.enable = true;
-  programs.dconf.enable = true;
-  programs.firefox.enable = true;
-
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  # Laptop configuration...
+  services.logind.lidSwitch = "lock";
 
   services.fwupd.enable = true;
 
   services.openssh.enable = true;
-
-  services.syncthing = {
-    enable = true;
-    user = "f_lynx";
-    configDir = "/home/f_lynx/.config/syncthing/";
-    dataDir = "/home/f_lynx/Sync/";
-  };
 
   services.keyd = {
     enable = true;
@@ -328,26 +205,206 @@
     };
   };
 
-  services.flatpak.enable = true;
+  services.syncthing = {
+    enable = true;
+    user = "f_lynx";
+    configDir = "/home/f_lynx/.config/syncthing/";
+    dataDir = "/home/f_lynx/Sync/";
+  };
 
-  # Laptop configuration...
-  services.logind.lidSwitch = "lock";
+  # Tor
+  # see: https://nixos.wiki/wiki/Tor
+  services.tor = {
+    enable = true;
+    client.enable = true;
+
+    settings = {
+      UseBridges = true;
+
+      # obfs4...
+      ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
+      Bridge = [
+        "obfs4 85.131.118.200:9674 A972B2E5384EAAA50D31E1A874CDD34D3DA6DE58 cert=MQJsFBUmP7SpLQwJwLzd+eELqTQ3ryHHXwDjy4yNlRq20i1B/fMiX+Po5pkixdCG100aWw iat-mode=0"
+      ];
+
+      ## snowflake... (XXX fails)
+      #ClientTransportPlugin = "snowflake exec ${pkgs.snowflake}/bin/snowflake-client -url https://snowflake-broker.torproject.net.global.prod.fastly.net/ -front cdn.sstatic.net -ice stun:stun.l.google.com:19302,stun:stun.voip.blackberry.com:3478,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478";
+      #ClientTransportPlugin = "snowflake exec ${pkgs.snowflake}/bin/snowflake-client";
+      #Bridge = [
+      #  "snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
+      #  "snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
+      #];
+    };
+  };
+
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  # services.xserver.libinput.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.f_lynx = {
+    isNormalUser = true;
+    description = "Alex A. Naanou";
+    extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [
+    ];
+  };
+  environment.localBinInPath = true;
+
+  environment.variables.EDITOR = "vim";
+
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    vim-full
+    micro
+    vifm mc far2l
+    ranger
+
+    psmisc
+    #tdrop
+    tmux
+    tree
+    btop htop #gtop
+    iotop iftop
+    ncdu du-dust
+
+    gparted
+    #gdisk
+    testdisk
+    jdupes
+
+    wget
+    tor
+    syncthingtray
+    #shadowsocks-rust
+    #shadowsocks-v2ray-plugin
+    ungoogled-chromium
+    tor-browser
+
+    zip unzip
+    tldr
+    bat
+
+    # LaTeX
+    (texlive.combine {
+      inherit (texlive) scheme-medium
+      # missing:
+      #   calc graphicx ifthen pgffor rotating trimclip xinttools 
+      kvoptions xargs ifthenx iftex xint listofitems xkeyval
+      etoolbox changepage pdfcomment eso-pic environ numprint xcolor
+      pagecolor colorspace graphics adjustbox textpos fancyvrb flowfram
+      fancyhdr pdfpages geometry 
+      hardwrap catchfile 
+      # doc...
+      titlesec hypdoc doctools needspace xstring listings imakeidx  
+      latexmk;
+      #(setq org-latex-compiler "lualatex")
+      #(setq org-preview-latex-default-process 'dvisvgm)
+    })
+    # fonts...
+    nerdfonts
+
+    # GUI
+    keepassxc
+    ulauncher
+    kitty
+    #logseq
+    # XXX this does not work on default gnome...
+    wl-gammactl
+    nextcloud-client
+
+    # dev
+    gnumake
+    nodejs
+    electron
+    go
+    python3
+    #python311Packages.pygobject3
+    #sbcl
+
+    # Gnome stuff...
+    gnome.gnome-tweaks
+    gnome.dconf-editor
+    gnomeExtensions.advanced-alttab-window-switcher
+    gnomeExtensions.command-menu
+    gnomeExtensions.search-light
+    gnomeExtensions.quick-settings-tweaker
+    #gnomeExtensions.quake-mode
+    gnomeExtensions.quake-terminal
+    gnomeExtensions.gsconnect
+    gnomeExtensions.dash-to-panel
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.unmess
+    gnomeExtensions.custom-accent-colors
+    #gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.appindicator
+    gnomeExtensions.customize-ibus
+    gnomeExtensions.date-menu-formatter
+    gnomeExtensions.lock-keys
+    gnomeExtensions.clipboard-indicator
+    gnomeExtensions.hibernate-status-button
+    gnomeExtensions.caffeine
+    gnomeExtensions.grand-theft-focus
+    #gnomeExtensions.astra-monitor
+    # does not seem to work...
+    #gnomeExtensions.syncthing-indicator
+
+    gnome-firmware-updater
+    gnome.gedit
+
+    # media...
+    vlc
+    mpv
+    yt-dlp
+    cmus
+    media-downloader
+    ffmpeg
+    ffmpegthumbnailer
+
+    #blender
+    #krita
+
+    #texlive.combined.scheme-full 
+  ];
+
+  programs.geary.enable = false;
+
+  programs.git.enable = true;
+  programs.dconf.enable = true;
+  programs.firefox.enable = true;
+
+  # XXX not sure who wants electron...
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-25.9.0"
+  ];
+
+
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
   # ulauncher... 
-  systemd.user.services.ulauncher = {
-    enable = true;
-    description = "Start Ulauncher";
-    script = ''
-      ${pkgs.coreutils-full}/bin/sleep 2
-      ${pkgs.ulauncher}/bin/ulauncher --hide-window
-    '';
+  # XXX can't get ulauncher to be centered and focus on launch...
+  #systemd.user.services.ulauncher = {
+  #  enable = true;
+  #  description = "Start Ulauncher";
+  #  script = ''
+  #    ${pkgs.coreutils-full}/bin/sleep 2
+  #    ${pkgs.ulauncher}/bin/ulauncher --hide-window
+  #  '';
 
-    documentation = [ "https://github.com/Ulauncher/Ulauncher/blob/f0905b9a9cabb342f9c29d0e9efd3ba4d0fa456e/contrib/systemd/ulauncher.service" ];
-    # XXX this does not work for some reason...
-    #wantedBy = [ "graphical.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "display-manager.service" ];
-  };
+  #  documentation = [ "https://github.com/Ulauncher/Ulauncher/blob/f0905b9a9cabb342f9c29d0e9efd3ba4d0fa456e/contrib/systemd/ulauncher.service" ];
+  #  # XXX this does not work for some reason...
+  #  #wantedBy = [ "graphical.target" ];
+  #  wantedBy = [ "graphical-session.target" ];
+  #  after = [ "display-manager.service" ];
+  #};
 
 
   # Open ports in the firewall.
@@ -364,5 +421,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }
