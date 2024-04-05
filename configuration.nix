@@ -77,6 +77,7 @@
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  # XXX move to hardware-specific-file...
   boot.initrd.kernelModules = [ "i915" ];
 
   # fix an issue with the touchpad/touchpoint not working after suspend...
