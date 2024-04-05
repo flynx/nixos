@@ -89,7 +89,22 @@
   #'';
 
   # ThinkPad keyboard auto highlight...
-  #services.tp-auto-kbbl.enable = true;
+  # XXX this fails...
+  #services.tp-auto-kbbl = {
+  #  enable = true;
+  #  device = "/dev/input/event19";
+  #  arguments = [
+  #  ];
+  #};
+
+  # XXX this boots fine but then the onsole switches back to default font...
+  console = {
+    earlySetup = true;
+    packages = with pkgs; [ 
+      terminus_font 
+    ];
+    font = "ter-u18n";
+  };
 
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -283,9 +298,10 @@
     #tdrop
     tmux
     tree
-    btop htop #gtop
-    iotop iftop
+    btop htop iotop iftop
     ncdu du-dust
+
+    tlp acpi
 
     gparted
     #gdisk
@@ -322,6 +338,7 @@
     })
     # fonts...
     nerdfonts
+    terminus_font 
 
     # GUI
     keepassxc
@@ -333,6 +350,7 @@
     nextcloud-client
 
     # dev
+    gitFull
     gnumake
     nodejs
     electron
@@ -364,21 +382,18 @@
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.caffeine
     gnomeExtensions.grand-theft-focus
+    gnomeExtensions.command-menu
+    # XXX this seems to be missing...
+    #   see: https://github.com/AstraExt/astra-monitor
     #gnomeExtensions.astra-monitor
-    # does not seem to work...
-    #gnomeExtensions.syncthing-indicator
 
     gnome-firmware-updater
     gnome.gedit
 
     # media...
-    vlc
-    mpv
-    yt-dlp
-    cmus
-    media-downloader
-    ffmpeg
-    ffmpegthumbnailer
+    vlc mpv cmus
+    yt-dlp media-downloader
+    ffmpeg ffmpegthumbnailer
 
     #blender
     #krita
@@ -388,7 +403,7 @@
 
   programs.geary.enable = false;
 
-  programs.git.enable = true;
+  #programs.git.enable = true;
   programs.dconf.enable = true;
   programs.firefox.enable = true;
 
