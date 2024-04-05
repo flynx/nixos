@@ -77,6 +77,7 @@
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.initrd.kernelModules = [ "i915" ];
 
   # fix an issue with the touchpad/touchpoint not working after suspend...
   # XXX move to hardware-specific-file...
@@ -88,6 +89,17 @@
   #  ${pkgs.kmod}/bin/modprobe i2c_i801
   #'';
 
+  # NOTE: this will be reset on loading of gpu driver, this can be fixed by preloading the 
+  #       driver manually via:
+  #         boot.initrd.kernelModules = [ "i915" ];
+  console = {
+    earlySetup = true;
+    packages = with pkgs; [ 
+      terminus_font 
+    ];
+    font = "ter-u18n";
+  };
+
   # ThinkPad keyboard auto highlight...
   # XXX this fails...
   #services.tp-auto-kbbl = {
@@ -96,15 +108,6 @@
   #  arguments = [
   #  ];
   #};
-
-  # XXX this boots fine but then the onsole switches back to default font...
-  console = {
-    earlySetup = true;
-    packages = with pkgs; [ 
-      terminus_font 
-    ];
-    font = "ter-u18n";
-  };
 
   networking.hostName = "yoga-nix";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
