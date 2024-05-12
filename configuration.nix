@@ -240,6 +240,14 @@
       };
     };
   };
+  # groups keyd keyboard with the rest of the internal HID devices letting libinput correctly
+  # handle touchpad features line "disable while typing"...
+  environment.etc."libinput/local-overrides.quirks".text = ''
+    [keyd]
+    MatchUdevType=keyboard
+    MatchName=keyd virtual keyboard
+    AttrKeyboardIntegration=internal
+  '';
 
   services.syncthing = {
     enable = true;
@@ -260,7 +268,8 @@
       # obfs4...
       ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
       Bridge = [
-        "obfs4 85.131.118.200:9674 A972B2E5384EAAA50D31E1A874CDD34D3DA6DE58 cert=MQJsFBUmP7SpLQwJwLzd+eELqTQ3ryHHXwDjy4yNlRq20i1B/fMiX+Po5pkixdCG100aWw iat-mode=0"
+        "obfs4 51.68.49.200:61511 D44D53FEBBD9BFB59726B5818CEAAC5A31DFDD24 cert=1Lc1kIQ84lYXsH3duofsZWh0Eb+xVVEmmsZP8YN8tLuFfjYghEgFfIsLmo78kXX383KMRw iat-mode=0"
+        "obfs4 141.95.109.208:45280 377396B625F2A76E7DF51C1BF952EBD683EC3EA1 cert=R5X70kY6Hd4DdW8JbCsxBPMaMREIOwaqbwYGMff1NyPYUwLxnlQqzkP2fTD8uo2R7A5ROQ iat-mode=0"
       ];
 
       ## snowflake... (XXX fails)
@@ -273,9 +282,6 @@
     };
   };
 
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.f_lynx = {
@@ -305,6 +311,9 @@
     btop htop iotop iftop
     ncdu du-dust
 
+    # mostly needed for debugging...
+    #libinput
+
     tlp acpi
 
     gparted
@@ -333,7 +342,13 @@
       etoolbox changepage pdfcomment eso-pic environ numprint xcolor
       pagecolor colorspace graphics adjustbox textpos fancyvrb flowfram
       fancyhdr pdfpages geometry 
+      anyfontsize cprotect ccicons 
+      # XXX this seems to be missing...
+      #suffix 
+      lipsum 
       hardwrap catchfile 
+      # photobook...
+      photobook
       # doc...
       titlesec hypdoc doctools needspace xstring listings imakeidx  
       latexmk;
