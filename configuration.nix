@@ -137,6 +137,8 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  services.gpm.enable = true;
+
   services.devmon.enable = true;
   services.gvfs.enable = true;
   services.udisks2.enable = true;
