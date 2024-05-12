@@ -137,6 +137,10 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  services.devmon.enable = true;
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   # Configure keymap in X11
@@ -160,6 +164,9 @@
     [org.gnome.desktop.wm.keybindings]
     switch-input-source=['<Alt>Shift_L']
     switch-input-source-backward=['<Shift>Alt_L']
+
+    panel-run-dialog=['<Super>r']
+
   '';
   environment.gnome.excludePackages = [ 
     pkgs.gnome-tour 
@@ -236,7 +243,7 @@
       };
     };
   };
-  # groups keyd keyboard with the rest of the internal HID devices letting libinput correctly
+  # group keyd keyboard with the rest of the internal HID devices letting libinput correctly
   # handle touchpad features line "disable while typing"...
   environment.etc."libinput/local-overrides.quirks".text = ''
     [keyd]
@@ -295,6 +302,10 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    usbutils udiskie udisks
+    exfat exfatprogs
+    scrounge-ntfs
+
     vim-full
     micro
     vifm mc far2l
