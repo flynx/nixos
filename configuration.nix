@@ -1,14 +1,9 @@
 #
 # TODO:
 #   - setdisplay gamma (gnome-gamma-tool)
-#   - second language keyboard layout
-#   - language switching in Gnome (keyboard)
-#   - hibernation -- DONE
-#   - suspend -- DONE
 #   - split into logical components (OS, hardware, ...)
 #   - tablet-mode
 #     - sensors
-#   - latex -- DONE
 #
 #
 # Edit this configuration file to define what should be installed on
@@ -77,6 +72,7 @@
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  # prevent the console fonts from being reset on driver detect/load...
   # XXX move to hardware-specific-file...
   boot.initrd.kernelModules = [ "i915" ];
 
