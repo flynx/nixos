@@ -4,6 +4,7 @@
 #   - split into logical components (OS, hardware, ...)
 #   - tablet-mode
 #     - sensors
+#   - home manager (???)
 #
 #
 # Edit this configuration file to define what should be installed on
@@ -146,22 +147,27 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   # Configure keymap in X11
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "us,ru";
-    xkbOptions = "grp:alt_shift_toggle";
+    options = "grp:alt_shift_toggle";
   };
   services.xserver.excludePackages = [ 
     pkgs.xterm 
   ];
+  services.xrdp.enable = true;
+  services.xrdp.defaultWindowManager = "gnome-remote-desktop";
+  services.xrdp.openFirewall = true;
+
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  # set keyboard layouts and switching...
+  # set keyboard layouts and switching and othe key bindings...
   services.xserver.desktopManager.gnome.extraGSettingsOverrides = ''
     [org.gnome.desktop.input-sources]
     sources=[('xkb', 'us'),('xkb', 'ru')]
     per-window=true
+
 
     [org.gnome.desktop.wm.keybindings]
     switch-input-source=['<Alt>Shift_L']
@@ -169,7 +175,16 @@
 
     panel-run-dialog=['<Super>r']
 
+
+    [org/gnome/settings-daemon/plugins/media-keys]
+    custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+
+    [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+    binding='<Super>v'
+    command='gvim'
+    name='gvim'
   '';
+
   environment.gnome.excludePackages = [ 
     pkgs.gnome-tour 
   ];
@@ -390,8 +405,8 @@
     # Gnome stuff...
     gnome.gnome-tweaks
     gnome.dconf-editor
+    gnome.gnome-remote-desktop
     gnomeExtensions.advanced-alttab-window-switcher
-    gnomeExtensions.command-menu
     gnomeExtensions.search-light
     gnomeExtensions.quick-settings-tweaker
     #gnomeExtensions.quake-mode
@@ -410,13 +425,14 @@
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.caffeine
     gnomeExtensions.grand-theft-focus
-    gnomeExtensions.command-menu
+    gnomeExtensions.guillotine
+    #gnomeExtensions.command-menu
     # XXX this seems to be missing...
     #   see: https://github.com/AstraExt/astra-monitor
     #gnomeExtensions.astra-monitor
 
     gnome-firmware-updater
-    gnome.gedit
+    gedit
 
     # media...
     vlc mpv cmus
