@@ -425,8 +425,8 @@
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.caffeine
     gnomeExtensions.grand-theft-focus
+    # XXX seems to be out of date for Gnome 46...
     gnomeExtensions.guillotine
-    #gnomeExtensions.command-menu
     # XXX this seems to be missing...
     #   see: https://github.com/AstraExt/astra-monitor
     #gnomeExtensions.astra-monitor
