@@ -324,9 +324,9 @@
     scrounge-ntfs
 
     vim-full
-    micro
-    vifm mc far2l
-    ranger
+    #micro
+    vifm mc far2l nnn 
+    #ranger
 
     psmisc
     #tdrop
@@ -343,7 +343,7 @@
     gparted
     #gdisk
     testdisk
-    jdupes
+    jdupes fdupes
 
     wget
     tor
@@ -351,7 +351,7 @@
     #shadowsocks-rust
     #shadowsocks-v2ray-plugin
     ungoogled-chromium
-    tor-browser
+    #tor-browser
 
     zip unzip
     tldr
@@ -379,6 +379,7 @@
       #(setq org-latex-compiler "lualatex")
       #(setq org-preview-latex-default-process 'dvisvgm)
     })
+
     # fonts...
     nerdfonts
     terminus_font 
@@ -386,7 +387,7 @@
     # GUI
     keepassxc
     ulauncher
-    kitty
+    kitty #ghostty
     #logseq
     # XXX this does not work on default gnome...
     wl-gammactl
@@ -437,7 +438,8 @@
     # media...
     vlc mpv cmus
     yt-dlp media-downloader
-    ffmpeg ffmpegthumbnailer
+    ffmpeg #ffmpegthumbnailer
+    httrack
 
     #blender
     #krita
