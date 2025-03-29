@@ -327,6 +327,7 @@
     #micro
     vifm mc far2l nnn 
     #ranger
+    dos2unix
 
     psmisc
     #tdrop
