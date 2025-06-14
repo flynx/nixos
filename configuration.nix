@@ -189,13 +189,15 @@
         pkgs.gnome-tour 
       ];
 
+      security.rtkit.enable = true;
+
       # Enable CUPS to print documents.
       services.printing.enable = true;
 
       # Enable sound with pipewire.
       #sound.enable = true;
-      hardware.pulseaudio.enable = false;
-      security.rtkit.enable = true;
+      #hardware.pulseaudio.enable = false;
+      services.pulseaudio.enable = false;
       services.pipewire = {
         enable = true;
         alsa.enable = true;
@@ -321,7 +323,8 @@
       environment.systemPackages = with pkgs; [
         usbutils udiskie udisks
         exfat exfatprogs
-        scrounge-ntfs
+        # XXX 20250614: does not build on 25.05
+        #scrounge-ntfs
 
         vim-full
         #micro
@@ -504,14 +507,23 @@
         })
 
         # fonts...
-        nerdfonts
+        #nerdfonts
 
         #blender
         #krita
         #gimp3
-        #gimp3-with-plugins
+        gimp3-with-plugins
 
       ];
+
+      # Nerd Fonts...
+      fonts.packages = [
+        pkgs.nerd-fonts.droid-sans-mono
+      ];
+      #fonts.packages = [ ... ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+      # all nerd fonts (~8G)...
+      #fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+
     }) 
   ];
 }
