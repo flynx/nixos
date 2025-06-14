@@ -45,7 +45,8 @@
   nixpkgs.config.packageOverrides = pkgs: {
     intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
   };
-  hardware.opengl = {
+  #hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       intel-media-driver # LIBVA_DRIVER_NAME=iHD
@@ -193,7 +194,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  sound.enable = true;
+  #sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -405,9 +406,9 @@
     #sbcl
 
     # Gnome stuff...
-    gnome.gnome-tweaks
-    gnome.dconf-editor
-    gnome.gnome-remote-desktop
+    gnome-tweaks
+    dconf-editor
+    gnome-remote-desktop
     gnomeExtensions.advanced-alttab-window-switcher
     gnomeExtensions.search-light
     gnomeExtensions.quick-settings-tweaker
