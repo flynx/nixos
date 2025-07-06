@@ -421,6 +421,7 @@
         ffmpeg #ffmpegthumbnailer
         httrack
 
+        exiftool vips
       ];
 
       programs.geary.enable = false;
@@ -491,20 +492,27 @@
           kvoptions xargs ifthenx iftex xint listofitems xkeyval
           etoolbox changepage pdfcomment eso-pic environ numprint xcolor
           pagecolor colorspace graphics adjustbox textpos fancyvrb flowfram
-          fancyhdr pdfpages geometry 
-          anyfontsize cprotect ccicons 
-          # XXX this seems to be missing...
-          #suffix 
-          lipsum 
-          hardwrap catchfile 
-          # photobook...
-          photobook
-          # doc...
+          fancyhdr pdfpages geometry varwidth hyphenat bigfoot lipsum 
+          anyfontsize cprotect ccicons multitoc hardwrap catchfile 
           titlesec hypdoc doctools needspace xstring listings imakeidx  
           latexmk;
+          pax
+
+          # fonts...
+          opensans courier
+
+          # languages...
+          russ babel-russian hyphen-russian
+          
+          # photobook...
+          photobook
+          
           #(setq org-latex-compiler "lualatex")
           #(setq org-preview-latex-default-process 'dvisvgm)
         })
+
+        # jdk - required by texlive-pax (BUG: no dependency??)
+        temurin-jre-bin
 
         # fonts...
         #nerdfonts
