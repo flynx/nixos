@@ -416,7 +416,8 @@
         gedit
 
         # media...
-        vlc mpv cmus
+        vlc mpv 
+        cmus rmpc mpd mpc
         yt-dlp media-downloader
         ffmpeg #ffmpegthumbnailer
         httrack
@@ -495,18 +496,20 @@
           fancyhdr pdfpages geometry varwidth hyphenat bigfoot lipsum 
           anyfontsize cprotect ccicons multitoc hardwrap catchfile 
           titlesec hypdoc doctools needspace xstring listings imakeidx  
-          latexmk;
+          latexmk
           pax
 
           # fonts...
           opensans courier
-
+          
           # languages...
           russ babel-russian hyphen-russian
-          
+
           # photobook...
           photobook
-          
+
+          ;
+
           #(setq org-latex-compiler "lualatex")
           #(setq org-preview-latex-default-process 'dvisvgm)
         })
@@ -514,12 +517,8 @@
         # jdk - required by texlive-pax (BUG: no dependency??)
         temurin-jre-bin
 
-        # fonts...
-        #nerdfonts
-
         #blender
         #krita
-        #gimp3
         gimp3-with-plugins
 
       ];
