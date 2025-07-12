@@ -194,21 +194,26 @@
       # Enable CUPS to print documents.
       services.printing.enable = true;
 
-      # Enable sound with pipewire.
-      #sound.enable = true;
-      #hardware.pulseaudio.enable = false;
+      # Pipewire...
       services.pulseaudio.enable = false;
       services.pipewire = {
         enable = true;
         alsa.enable = true;
         alsa.support32Bit = true;
         pulse.enable = true;
-        # If you want to use JACK applications, uncomment this
-        #jack.enable = true;
+        jack.enable = true;
+      };
+      services.mpd = {
+        enable = true;
+        # XXX
+        musicDirectory = "/home/f_lynx/Music";
+        extraConfig = ''
+        '';
 
-        # use the example session manager (no others are packaged yet so this is enabled by default,
-        # no need to redefine it in your config for now)
-        #media-session.enable = true;
+        # Allow non-localhost connections
+        #network.listenAddress = "any"; 
+        # Systemd feature: only start MPD service upon connection to its socket
+        network.startWhenNeeded = true;
       };
 
       services.colord.enable = true;
@@ -303,7 +308,6 @@
           #];
         };
       };
-
 
       # Define a user account. Don't forget to set a password with ‘passwd’.
       users.users.f_lynx = {
@@ -417,7 +421,7 @@
 
         # media...
         vlc mpv 
-        cmus rmpc mpd mpc
+        cmus rmpc mpc
         yt-dlp media-downloader
         ffmpeg #ffmpegthumbnailer
         httrack
@@ -517,7 +521,8 @@
         # jdk - required by texlive-pax (BUG: no dependency??)
         temurin-jre-bin
 
-        #blender
+        blender
+        rawtherapee
         #krita
         gimp3-with-plugins
 
