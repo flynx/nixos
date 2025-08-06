@@ -207,13 +207,13 @@
         enable = true;
         # XXX
         musicDirectory = "/home/f_lynx/Music";
-        extraConfig = ''
-        '';
+        #extraConfig = ''
+        #'';
 
         # Allow non-localhost connections
         #network.listenAddress = "any"; 
         # Systemd feature: only start MPD service upon connection to its socket
-        network.startWhenNeeded = true;
+        #network.startWhenNeeded = true;
       };
 
       services.colord.enable = true;
@@ -318,8 +318,10 @@
         ];
       };
       environment.localBinInPath = true;
-
       environment.variables.EDITOR = "vim";
+      #environment.sessionVariables = rec {
+      #  PATH = "~/bin/:$PATH";
+      #};
 
 
       # List packages installed in system profile. To search, run:
