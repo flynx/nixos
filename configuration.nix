@@ -366,6 +366,7 @@
         zip unzip
         tldr
         bat
+        sc-im visidata jq
 
         # fonts...
         terminus_font 
