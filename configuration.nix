@@ -50,7 +50,7 @@
         extraPackages = with pkgs; [
           intel-media-driver # LIBVA_DRIVER_NAME=iHD
           intel-vaapi-driver # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
-          vaapiVdpau
+          libva-vdpau-driver
           libvdpau-va-gl
         ];
       };
@@ -160,10 +160,10 @@
 
 
       # Enable the GNOME Desktop Environment.
-      services.xserver.displayManager.gdm.enable = true;
-      services.xserver.desktopManager.gnome.enable = true;
+      services.displayManager.gdm.enable = true;
+      services.desktopManager.gnome.enable = true;
       # set keyboard layouts and switching and othe key bindings...
-      services.xserver.desktopManager.gnome.extraGSettingsOverrides = ''
+      services.desktopManager.gnome.extraGSettingsOverrides = ''
         [org.gnome.desktop.input-sources]
         sources=[('xkb', 'us'),('xkb', 'ru')]
         per-window=true
@@ -221,7 +221,7 @@
       services.flatpak.enable = true;
 
       # Laptop configuration...
-      services.logind.lidSwitch = "lock";
+      services.logind.settings.Login.HandleLidSwitch = "lock";
 
       services.fwupd.enable = true;
 
@@ -343,7 +343,7 @@
         tmux
         tree
         btop htop iotop iftop
-        ncdu du-dust
+        ncdu dust
 
         # mostly needed for debugging...
         #libinput
@@ -360,20 +360,15 @@
         syncthingtray
         #shadowsocks-rust
         #shadowsocks-v2ray-plugin
-        ungoogled-chromium
-        #tor-browser
 
         zip unzip
-        tldr
-        bat
-        sc-im visidata jq
 
         # fonts...
         terminus_font 
 
         # GUI
         keepassxc
-        ulauncher
+        #ulauncher
         kitty #ghostty
         #logseq
         # XXX this does not work on default gnome...
@@ -384,11 +379,6 @@
         gitFull
         gnumake
         nodejs
-        electron
-        go
-        python3
-        #python311Packages.pygobject3
-        #sbcl
 
         # Gnome stuff...
         gnome-tweaks
@@ -403,14 +393,15 @@
         gnomeExtensions.dash-to-panel
         gnomeExtensions.blur-my-shell
         gnomeExtensions.unmess
-        gnomeExtensions.custom-accent-colors
+        #gnomeExtensions.custom-accent-colors
         #gnomeExtensions.tray-icons-reloaded
         gnomeExtensions.appindicator
         gnomeExtensions.customize-ibus
         gnomeExtensions.date-menu-formatter
         gnomeExtensions.lock-keys
         gnomeExtensions.clipboard-indicator
-        gnomeExtensions.hibernate-status-button
+        #gnomeExtensions.hibernate-status-button
+        gnomeExtensions.power-off-options
         gnomeExtensions.caffeine
         gnomeExtensions.grand-theft-focus
         # XXX seems to be out of date for Gnome 46...
@@ -419,30 +410,13 @@
         #   see: https://github.com/AstraExt/astra-monitor
         #gnomeExtensions.astra-monitor
 
-        gnome-firmware-updater
+        gnome-firmware
         gedit
 
-        # media...
-        vlc mpv 
-        cmus rmpc mpc
-        yt-dlp media-downloader
-        ffmpeg #ffmpegthumbnailer
-        httrack
-
-        exiftool vips
       ];
-
-      programs.geary.enable = false;
 
       #programs.git.enable = true;
       programs.dconf.enable = true;
-      programs.firefox.enable = true;
-
-      # XXX not sure who wants electron...
-      nixpkgs.config.permittedInsecurePackages = [
-        "electron-25.9.0"
-      ];
-
 
       # Some programs need SUID wrappers, can be configured further or are
       # started in user sessions.
@@ -489,7 +463,30 @@
 
     # Full config...
     (lib.mkIf (builtins.getEnv "NIX_LIGHTWEIGHT" == "") {
+
+      programs.geary.enable = false;
+      programs.firefox.enable = true;
+
+      # XXX not sure who wants electron...
+      nixpkgs.config.permittedInsecurePackages = [
+        "electron-25.9.0"
+      ];
+
+
       environment.systemPackages = with pkgs; [
+
+        # cli
+        tldr
+        bat
+
+        sc-im visidata jq
+
+        # devel...
+        go
+        python3
+        electron
+        #python311Packages.pygobject3
+        #sbcl
 
         # LaTeX
         #texlive.combined.scheme-full 
@@ -524,11 +521,22 @@
         # jdk - required by texlive-pax (BUG: no dependency??)
         temurin-jre-bin
 
+        ungoogled-chromium
+        #tor-browser
+
         blender
         rawtherapee
         #krita
         gimp3-with-plugins
 
+        # media...
+        vlc mpv 
+        cmus rmpc mpc
+        yt-dlp media-downloader
+        ffmpeg #ffmpegthumbnailer
+        httrack
+
+        exiftool vips
       ];
 
       # Nerd Fonts...
