@@ -478,6 +478,7 @@
         # cli
         tldr
         bat
+        aspell
 
         sc-im visidata jq
 
@@ -526,7 +527,7 @@
 
         blender
         rawtherapee
-        #krita
+        krita
         gimp3-with-plugins
 
         # media...
