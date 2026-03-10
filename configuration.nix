@@ -334,7 +334,7 @@
 
         vim-full
         #micro
-        vifm mc far2l nnn 
+        vifm mc far2l nnn broot 
         #ranger
         dos2unix
 
