@@ -288,24 +288,39 @@
       services.tor = {
         enable = true;
         client.enable = true;
+        torsocks.enable = true;
 
         settings = {
           UseBridges = true;
 
           # obfs4...
-          ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
+          #ClientTransportPlugin = "obfs4 exec ${pkgs.obfs4}/bin/lyrebird";
+          ClientTransportPlugin = [
+            "obfs4 exec ${pkgs.obfs4}/bin/lyrebird"
+            "webtunnel exec ${pkgs.webtunnel}/bin/client"
+            "snowflake exec ${pkgs.snowflake}/bin/client"
+          ];
           Bridge = [
+            # x1f...
+            "webtunnel [2001:db8:cb1d:ca59:35a3:6d61:df7b:5d12]:443 147F464072959E1FEAC80FC782D620845468A22A url=https://gen001.akiel.dev/zqhIfuq3WOrrkCE90JPMsiLfoR4HWj0RgKsM8Wu98U ver=0.0.3"
+            "webtunnel [2001:db8:3c5d:4c81:bd5f:d25b:5567:ffe3]:443 3D76FB0AAF9D3500D1792CED78E5846B63F5CAB4 url=https://ry8bvu1ft9.yyo.moe/633wcn8fbj ver=0.0.4"
+            "obfs4 185.177.207.244:11244 9B5D1381000B3195BF2C0400ADE89A4CA9DE4EF1 cert=bKA4A4O1WezEItisqx170Z+23Md5nlqRJYYM1KLO13RzSDHClb5eZCrfvEt29Qh5vWUhCw iat-mode=0"
+            "obfs4 212.51.140.71:26812 502478C5C3ACE2AE6D9EB4E85ED2D3F0799F451D cert=lIi+d2NVLePZTx9yLWuXwqV6nxl+OKLg8GfP7ITPI2U4SWb53yLIDeC5zS+n2uLyAfrGNw iat-mode=0"
+
+            # telegram...
+            "webtunnel [2001:db8:1f1e:4d2f:321b:6626:823e:c504]:443 4946C9B8410CF59953455C158F957CAB2055A61D url=https://mstdn.party/fooghee7naChifi0 ver=0.0.2"
+            "webtunnel [2001:db8:9e1a:414a:6386:1721:6e09:cbaf]:443 1B6EBD6C1D5438C4AEE8D1C903F58754FE11E1BD url=https://www2.ruhnama.net/VsCk1XCZv5noySVy1CERKqkx ver=0.0.3"
+            "webtunnel [2001:db8:5d90:6cd2:fcac:ea1c:67b2:bee0]:443 D85733AB26E770DC4AB2ED44A0559504550D0925 url=https://qbxa1hay.xoomlia.com/k0tf6syz/ ver=0.0.3"
+            "webtunnel [2001:db8:78cb:8993:6b:38bc:a7cb:ff93]:443 8CD9BDB8EFE744D55852D140E2FB3EC93733B314 url=https://sabbatical.one/AxHffZruR1yyOamz64WtK58r ver=0.0.3"
+
+            # orig...
             "obfs4 51.68.49.200:61511 D44D53FEBBD9BFB59726B5818CEAAC5A31DFDD24 cert=1Lc1kIQ84lYXsH3duofsZWh0Eb+xVVEmmsZP8YN8tLuFfjYghEgFfIsLmo78kXX383KMRw iat-mode=0"
             "obfs4 141.95.109.208:45280 377396B625F2A76E7DF51C1BF952EBD683EC3EA1 cert=R5X70kY6Hd4DdW8JbCsxBPMaMREIOwaqbwYGMff1NyPYUwLxnlQqzkP2fTD8uo2R7A5ROQ iat-mode=0"
-          ];
 
-          ## snowflake... (XXX fails)
-          #ClientTransportPlugin = "snowflake exec ${pkgs.snowflake}/bin/snowflake-client -url https://snowflake-broker.torproject.net.global.prod.fastly.net/ -front cdn.sstatic.net -ice stun:stun.l.google.com:19302,stun:stun.voip.blackberry.com:3478,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478";
-          #ClientTransportPlugin = "snowflake exec ${pkgs.snowflake}/bin/snowflake-client";
-          #Bridge = [
-          #  "snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
-          #  "snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
-          #];
+            # test...
+            #"snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
+            #"snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.l.google.com:19302,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.net:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn"
+          ];
         };
       };
 
