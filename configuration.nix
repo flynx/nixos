@@ -394,6 +394,7 @@
         gitFull
         gnumake
         nodejs
+        deno
 
         # Gnome stuff...
         gnome-tweaks
