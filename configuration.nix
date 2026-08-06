@@ -206,7 +206,9 @@
       services.mpd = {
         enable = true;
         # XXX
-        musicDirectory = "/home/f_lynx/Music";
+        settings = {
+          music_directory = "/home/f_lynx/Music";
+        };
         #extraConfig = ''
         #'';
 
