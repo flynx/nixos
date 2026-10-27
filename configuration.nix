@@ -47,7 +47,8 @@
         dates = "weekly";
         #options = "--delete-older-than 14d";
       };
-      nix.settings.auto-optimise-store = true;
+      # XXX this seems to break nixos-rebuild...
+      ##nix.settings.auto-optimise-store = true;
 
 
       # Allow unfree packages
