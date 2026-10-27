@@ -35,6 +35,21 @@
         "flakes"
       ];
 
+      ## Auto-updates...
+      #system.autoUpgrade = {
+      #  enable = true;
+      #  dates = "weekly";
+      #};
+
+      # Auto-cleanup...
+      nix.gc = {
+        automatic = true;
+        dates = "weekly";
+        #options = "--delete-older-than 14d";
+      };
+      nix.settings.auto-optimise-store = true;
+
+
       # Allow unfree packages
       nixpkgs.config.allowUnfree = true;
 
